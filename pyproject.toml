@@ -1,0 +1,131 @@
+[project]
+name = "map4d"
+version = "0.1.0"
+authors = [
+  { name="Tobias Fischer", email="tobias.fischer@inf.ethz.ch" },
+]
+description = "Repo for dynamic scene reconstruction."
+readme = "README.md"
+requires-python = ">=3.10.0"
+license = { text="Apache 2.0"}
+
+# all other dependencies are same as nerfstudio
+dependencies = [
+    "nerfstudio==1.0.3",
+    "gsplat==0.1.11",
+    "lpips==0.1.4",
+    "numpy==1.26.4",
+    "plyfile",
+    "pyarrow",
+    "utm",
+]
+
+[build-system]
+requires = [
+    "setuptools == 67.6.0",
+    "torch >= 1.13.1",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[project.optional-dependencies]
+# Development packages
+dev = [
+    "black[jupyter]==23.3.0",
+    "isort==5.10.1",
+    "pre-commit==3.3.2",
+    "pytest==7.1.2",
+    "pytest-xdist==2.5.0",
+    "typeguard==2.13.3",
+    "ruff==0.1.13",
+]
+
+# register methods, datasets
+[project.entry-points.'nerfstudio.method_configs']
+ml-nsg = 'map4d.config:ml_nsg'
+4dgf = 'map4d.config:neural_dyn_gs'
+
+ml-nsg-vkitti2 = 'map4d.config.scene_graph:ml_nsg_vkitti2'
+ml-nsg-kitti = 'map4d.config.scene_graph:ml_nsg_kitti'
+ml-nsg-av2 = 'map4d.config.scene_graph:ml_nsg_av2'
+
+4dgf-vkitti = 'map4d.config.gauss_splat:neural_dyn_gs_vkitti'
+4dgf-kitti = 'map4d.config.gauss_splat:neural_dyn_gs_kitti'
+4dgf-av2 = 'map4d.config.gauss_splat:neural_dyn_gs_av2'
+4dgf-av2-big = 'map4d.config.gauss_splat:neural_dyn_gs_av2_big'
+4dgf-waymo = 'map4d.config.gauss_splat:neural_dyn_gs_waymo'
+
+
+[project.entry-points.'nerfstudio.dataparser_configs']
+street = 'map4d.data.parser.base:StreetSceneDataParserSpecification'
+
+
+[project.scripts]
+mp-render = "map4d.scripts.render:entrypoint"
+mp-process = "map4d.scripts.process_data:entrypoint"
+mp-dev-test = "map4d.scripts.run_checks:entrypoint"
+
+
+[options]
+# equivalent to using --extra-index-url with pip, which is needed for specifying the CUDA version torch and torchvision
+dependency_links = [
+    "https://download.pytorch.org/whl/cu118"
+]
+
+[tool.setuptools.package-data]
+"*" = ["*.cu", "*.json", "py.typed", "setup.bash", "setup.zsh"]
+
+# code check, test options
+[tool.pyright]
+include = ["src/map4d"]
+exclude = ["**/node_modules",
+    "**/__pycache__",
+    "data/*"
+]
+defineConstant = { DEBUG = true }
+
+reportMissingImports = "warning"
+reportMissingTypeStubs = false
+reportPrivateImportUsage = false
+
+pythonVersion = "3.10"
+pythonPlatform = "Linux"
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+line_length = 120
+
+[tool.ruff]
+select = [
+    "E",  # pycodestyle errors.
+    "F",  # Pyflakes rules.
+    "PLC",  # Pylint convention warnings.
+    "PLE",  # Pylint errors.
+    "PLR",  # Pylint refactor recommendations.
+    "PLW",  # Pylint warnings.
+]
+ignore = [
+    "E731",  # lambda expression
+    "E501",  # Line too long.
+    "F722",  # Forward annotation false positive from jaxtyping. Should be caught by pyright.
+    "F821",  # Forward annotation false positive from jaxtyping. Should be caught by pyright.
+    "PLR2004",  # Magic value used in comparison.
+    "PLR0915",  # Too many statements.
+    "PLR0913",  # Too many arguments.
+    "PLC0414",  # Import alias does not rename variable. (this is used for exporting names)
+    "PLC1901",  # Use falsey strings.
+    "PLR5501",  # Use `elif` instead of `else if`.
+    "PLR0911",  # Too many return statements.
+    "PLR0912",  # Too many branches.
+    "PLW0603",  # Globa statement updates are discouraged.
+    "PLW2901",  # For loop variable overwritten.
+]
+
+[tool.pytest.ini_options]
+addopts = "-n=4 --typeguard-packages=map4d"
+testpaths = [
+    "tests",
+]
