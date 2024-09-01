@@ -1,0 +1,48 @@
+# This workflow will install Python dependencies, run tests and lint
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  core_checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+
+      - name: install dependencies
+        run: |
+           python3 -m pip install --upgrade pip
+           python3 -m pip install setuptools wheel
+           python3 -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+
+      - name: install
+        run: |
+          BUILD_NO_CUDA=1 python3 -m pip install --upgrade --upgrade-strategy eager -e .[dev]
+          python3 -m pip freeze
+
+      - name: isort
+        run: |
+          python3 -m isort --check src
+          python3 -m isort --check tests
+
+      - name: black
+        run: |
+          python3 -m black --check src
+          python3 -m black --check tests
+
+      - name: lint
+        run: |
+          python3 -m ruff check src --output-format=github
+
+      - name: test
+        run: python3 -m pytest tests
