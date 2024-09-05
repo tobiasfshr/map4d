@@ -61,17 +61,16 @@ BLOCK_WIDTH = 16
 
 def _patch_broken_nerfstudio_viewer():
     from nerfstudio.viewer_legacy.server.viewer_utils import SetTrace
-    # nerfstudio's viewer has two rendering passes for each view - fast and slow. 
-    # First, the fast pass is used with a lower res to render something to present to the user immediately. 
-    # This is followed by the second pass which takes much longer for nerfs 
-    # (could be seconds with nerfacto). For that reason, nerfstudio uses sys.settrace 
-    # to cancel the running rendering and switch back to faster rendering as soon as 
-    # user moves the camera. Unfortunately, this has lots of unwanted effects - breaks 
+
+    # nerfstudio's viewer has two rendering passes for each view - fast and slow.
+    # First, the fast pass is used with a lower res to render something to present to the user immediately.
+    # This is followed by the second pass which takes much longer for nerfs
+    # (could be seconds with nerfacto). For that reason, nerfstudio uses sys.settrace
+    # to cancel the running rendering and switch back to faster rendering as soon as
+    # user moves the camera. Unfortunately, this has lots of unwanted effects - breaks
     # debuggers, and in our case, it cancels the rendering at a point that breaks the model,
     # causes random errors, or renders a bad image.
-
     # This function patches NerfStudio such that it does not set the trace and break the viewer.
-
     # Patch broken sys.settrace in nerfstudio
     SetTrace.__enter__ = lambda self: self
 
