@@ -150,6 +150,13 @@ mp-render camera-path --load-config <path_to_trained_model>
 ```
 You can also use the nerfstudio viewer to generate your own camera paths or use arguments like smooth, rotate and mirror to alter the reference trajectory.
 
+## Viewer
+You can visualize your training with the viewer directly via specifying `--vis viewer` or visualize finished trainings with:
+```
+ns-viewer --load-config <path_to_trained_model>
+```
+We add sliders for time and sequence ID to control which objects are rendered at which location in the viewer.
+
 ## Documentation
 
 For more detailed information on the codebase, please check out our [documentation](docs/DOCS.md).

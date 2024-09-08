@@ -24,6 +24,8 @@ from nerfstudio.utils.colors import get_color
 # need following import for background color override
 from nerfstudio.utils.comms import get_rank
 from nerfstudio.utils.rich_utils import CONSOLE
+from nerfstudio.viewer.viewer import Viewer, ViewerControl
+from nerfstudio.viewer.viewer_elements import ViewerSlider
 from pytorch_msssim import SSIM
 from torch import Tensor
 from torch.nn import Parameter
@@ -287,6 +289,43 @@ class NeuralDynamicGaussianSplattingModel(Model):
         self.object_class_ids = Parameter(self.object_class_ids, requires_grad=False)
         self.object_times = Parameter(self.object_times, requires_grad=False)
         self.render_images = False  # Flag used to render debugging images
+
+        # add viewer controls
+        self.viewer_time = ViewerSlider("Time", 0.0, -1.0, 1.0, 0.01)
+        if self.sequence_ids.numel() > 1:
+            self.viewer_sequence = ViewerSlider("Sequence", 0, 0, self.sequence_ids.numel() - 1, 1.0)
+        else:
+            self.viewer_sequence = None
+
+        # Callback to register viewer elements
+        class _ViewerControlHook(ViewerControl):
+            def __init__(self, *args, **kwargs):
+                pass
+
+            def _setup(_self, viewer: Viewer):
+                self.register_viewer_elements(viewer)
+
+        self.viewer_control_hook = _ViewerControlHook()
+
+    def register_viewer_elements(self, viewer: Viewer):
+        # The legacy component api is awful, so we have to do this
+        def add_callback(component, cb):
+            component.gui_handle.on_update(cb)
+            if component.gui_handle is None:
+                old_hook = component.cb_hook
+
+                def hook(*args, **kwargs):
+                    cb()
+                    if old_hook is not None:
+                        old_hook(*args, **kwargs)
+
+                self.viewer_time.cb_hook = hook
+            else:
+                component.gui_handle.on_update(cb)
+
+        add_callback(self.viewer_time, lambda *args, **kwargs: viewer._trigger_rerender())
+        if self.viewer_sequence is not None:
+            add_callback(self.viewer_sequence, lambda *args, **kwargs: viewer._trigger_rerender())
 
     def populate_modules(self):
         # init points
@@ -677,9 +716,14 @@ class NeuralDynamicGaussianSplattingModel(Model):
         if camera.metadata is not None and "cam_idx" in camera.metadata:
             self.camera_optimizer.apply_to_camera(camera)
 
-        # add seq ids / time for viewer
+        # add viewer info
         if camera.metadata is None:
             camera.metadata = {}
+            camera.times = torch.ones_like(camera.times, dtype=torch.float) * self.viewer_time.value
+            if self.viewer_sequence is not None:
+                camera.metadata["sequence_ids"] = (
+                    torch.ones_like(camera.times, dtype=torch.long) * self.viewer_sequence.value
+                )
 
         if "sequence_ids" not in camera.metadata:
             camera.metadata["sequence_ids"] = torch.zeros_like(camera.times, dtype=torch.long)
