@@ -444,11 +444,7 @@ class ProcessArgoverse2:
         lidar_pc = io_utils.read_lidar_sweep(lidar_fpath, attrib_spec="xyz")
 
         # project lidar to image
-        (
-            uv,
-            points_cam,
-            is_valid_points,
-        ) = self.loader.project_ego_to_img_motion_compensated(
+        (uv, points_cam, is_valid_points,) = self.loader.project_ego_to_img_motion_compensated(
             points_lidar_time=lidar_pc,
             cam_name=camera,
             cam_timestamp_ns=cam_timestamp,
@@ -878,10 +874,7 @@ class ProcessWaymo:
                 width = u.max() - u.min()
                 height = v.max() - v.min()
                 # max pooling
-                dynamic_mask[
-                    int(xy[1]) : int(xy[1] + height),
-                    int(xy[0]) : int(xy[0] + width),
-                ] = np.maximum(
+                dynamic_mask[int(xy[1]) : int(xy[1] + height), int(xy[0]) : int(xy[0] + width),] = np.maximum(
                     dynamic_mask[
                         int(xy[1]) : int(xy[1] + height),
                         int(xy[0]) : int(xy[0] + width),
