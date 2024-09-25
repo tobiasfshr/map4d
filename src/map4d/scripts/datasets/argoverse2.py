@@ -1,3 +1,4 @@
+import json
 import os
 import pickle
 from dataclasses import dataclass
@@ -239,9 +240,11 @@ class ProcessArgoverse2:
     def compute_pointclouds_alignment_bounds(self, seq_name, log_ids, timestamps_per_log):
         if len(log_ids) > 1 and self.align_pointclouds:
             assert os.path.exists(
-                self.alignment_path / f"{seq_name}_transforms.pkl"
-            ), f"Alignment file {self.alignment_path / f'{seq_name}_transforms.pkl'} does not exist."
-            transforms_per_seq = pickle.load(open(self.alignment_path / f"{seq_name}_transforms.pkl", "rb"))
+                self.alignment_path / f"{seq_name}_transforms.json"
+            ), f"Alignment file {self.alignment_path / f'{seq_name}_transforms.json'} does not exist."
+            with open(self.alignment_path / f"{seq_name}_transforms.json", "r") as f:
+                transforms_per_seq = json.load(f)
+            transforms_per_seq = [np.array(transforms_per_seq[log]) for log in log_ids]
         else:
             transforms_per_seq = [np.eye(4) for _ in range(len(log_ids))]
 
