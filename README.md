@@ -40,7 +40,7 @@ python setup.py develop
 
 ## Data
 We support the following datasets:
-- [Argoverse 2](https://www.argoverse.org/av2.html) (Sensor dataset)
+- [Argoverse 2](docs/Argoverse2.md) (Sensor dataset)
 - [KITTI](https://www.cvlibs.net/datasets/kitti/eval_tracking.php) (tracking split)
 - [VKITTI2](https://europe.naverlabs.com/research/computer-vision/proxy-virtual-worlds-vkitti-2/)
 - [Waymo Open](https://waymo.com/open/)
