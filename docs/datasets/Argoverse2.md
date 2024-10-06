@@ -39,8 +39,7 @@ curl -sL $S5CMD_URI | tar -C $INSTALL_DIR -xvzf - s5cmd
 Note that it will install s5cmd in your local bin directory. You can always change the path if you prefer installing it in another directory. Note that an AWS account is **not** required to download the datasets.
 
 ## Download & Preprocessing
-For Argoverse 2, we provide ego-vehicle masks located at `assets/masks`.
-
+Use the following commands to download and preprocess the data:
 
 ```
 # Residential split
@@ -61,4 +60,4 @@ data/
             0c61aea3-3cba-35f3-8971-df42cd5b9b1a/
             ...
 ```
-You can adjust the path with the `--data` option.
+You can adjust the path with the `--data` option. Note that we provide ego-vehicle masks for this dataset located at `assets/masks`.

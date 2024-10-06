@@ -2,9 +2,9 @@
 
 # [VKITTI2](https://europe.naverlabs.com/research/computer-vision/proxy-virtual-worlds-vkitti-2/)
 
-## Preprocessing
-
 Download the dataset to a location of your convenience. You can later adjust the data path in the preprocessing script.
+
+## Preprocessing
 
 By default we assume the following dataset location.
 ```
