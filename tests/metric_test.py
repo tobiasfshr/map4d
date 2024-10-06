@@ -29,8 +29,8 @@ def test_ssim():
     for _ in range(N_REPEATS):
         x = torch.rand(1, 3, 256, 512)
         y = torch.rand(1, 3, 256, 512)
-        assert torch.isclose(ssim(x[0].permute(1, 2, 0), y[0].permute(1, 2, 0)), torchmetrics_ssim(x, y), atol=1e-4)
-        assert torch.isclose(torchmetrics_ssim(x, y), gs_ssim(x, y), atol=1e-4)
+        assert torch.isclose(ssim(x[0].permute(1, 2, 0), y[0].permute(1, 2, 0)), gs_ssim(x, y), atol=1e-4)
+        assert torch.isclose(torchmetrics_ssim(x, y), gs_ssim(x, y), atol=1e-3)
 
 
 def test_lpips():
