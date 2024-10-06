@@ -47,7 +47,7 @@ We support the following datasets:
 
 Download the datasets to a location of your convenience. You can later adjust the data path in the preprocessing script. Note that we provide a joint download & preprocess utility for Waymo (see below).
 
-By default, assume the following folder structure:
+By default, we assume the following folder structure:
 ```
 data/
     Argoverse2/
