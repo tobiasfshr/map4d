@@ -39,84 +39,16 @@ python setup.py develop
 ```
 
 ## Data
-We support the following datasets:
-- [Argoverse 2](docs/Argoverse2.md) (Sensor dataset)
-- [KITTI](https://www.cvlibs.net/datasets/kitti/eval_tracking.php) (tracking split)
-- [VKITTI2](https://europe.naverlabs.com/research/computer-vision/proxy-virtual-worlds-vkitti-2/)
-- [Waymo Open](https://waymo.com/open/)
-
-Download the datasets to a location of your convenience. You can later adjust the data path in the preprocessing script. Note that we provide a joint download & preprocess utility for Waymo (see below).
-
-By default, we assume the following folder structure:
-```
-data/
-    Argoverse2/
-        train/
-            0c61aea3-3cba-35f3-8971-df42cd5b9b1a/
-            ...
-
-    KITTI/
-        tracking/
-            training/
-                image_02/
-                ...
-
-    VKITTI2/
-        Scene01/
-        ...
-    waymo/
-        ...
-```
-
-For Argoverse 2, the ego-vehicle masks are located at `assets/masks` by default.
-
-Generate the necessary metadata files with:
+Use our preprocessing scripts to prepare the datasets:
 ```
 mp-process [av2|kitti|vkitti2|waymo]
 ```
 
-To prepare the full datasets, run:
-
-### VKITTI2
-```
-mp-process vkitti2 --sequence 02
-mp-process vkitti2 --sequence 06
-mp-process vkitti2 --sequence 18
-```
-
-### KITTI
-
-```
-mp-process kitti --sequence 0001
-mp-process kitti --sequence 0002
-mp-process kitti --sequence 0006
-```
-### Waymo
-```
-mp-process waymo
-```
-
-This will download and preprocess the full Dynamic-32 split from [EmerNeRF](https://emernerf.github.io/).
-
-### Argoverse 2
-```
-# Residential split
-mp-process av2 --location-aabb 6180 1620 6310 1780
-
-# Downtown split
-mp-process av2 --location-aabb 1100 -50 1220 150
-
-# Single sequence
-mp-process av2
-```
-
-NOTE: For Argoverse 2, install the modified [devkit](https://argoverse.github.io/user-guide/getting_started.html) via
-```
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-rustup default nightly-2023-12-11
-pip install git+https://github.com/tobiasfshr/av2-api.git
-```
-We use the following rustc version: `rustc 1.76.0-nightly (21cce21d8 2023-12-11)`.
+We provided detailed instructions for preparing the supported datasets in our documentation: 
+- [Argoverse 2](docs/datasets/Argoverse2.md)
+- [KITTI](docs/datasets/KITTI.md)
+- [VKITTI2](docs/datasets/VKITTI2.md)
+- [Waymo Open](docs/datasets//Waymo.md)
 
 ## Models
 
