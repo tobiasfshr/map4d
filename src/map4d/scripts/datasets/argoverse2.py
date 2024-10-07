@@ -1,6 +1,8 @@
 import json
 import os
 import pickle
+import shutil
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, Tuple
@@ -25,6 +27,52 @@ try:
     from av2.structures.cuboid import CuboidList
 except ImportError:
     av2 = None
+
+
+# Residential split
+RESIDENTIAL_SEQUENCE_IDS = [
+    "0c61aea3-3cba-35f3-8971-df42cd5b9b1a",
+    "7c30c3fc-ea17-38d8-9c52-c75ccb112253",
+    "a2f568b5-060f-33f0-9175-7e2062d86b6c",
+    "b9f73e2a-292a-3876-b363-3ebb94584c7a",
+    "cea5f5c2-e786-30f5-8305-baead8923063",
+    "6b0cc3b0-2802-33a7-b885-f1f1409345ac",
+    "7cb4b11f-3872-3825-83b5-622e1a2cdb28",
+    "a359e053-a350-36cf-ab1d-a7980afaffa2",
+    "c654b457-11d4-393c-a638-188855c8f2e5",
+    "f41d0e8f-856e-3f7d-a3f9-ff5ba7c8e06d",
+    "6f2f7d1e-8ded-35c5-ba83-3ca906b05127",
+    "8aad8778-73ce-3fa0-93c7-804ac998667d",
+    "b51561d9-08b0-3599-bc78-016f1441bb91",
+    "c990cafc-f96c-3107-b213-01d217b11272",
+]
+
+# Downtown split
+DOWNTOWN_SEQUENCE_IDS = [
+    "05853f69-f948-3d04-8d64-d4e721c0e1a5",
+    "05fb81ab-5e46-3f63-a59f-82fc66d5a477",
+    "150ae964-5091-3681-b738-88715052c792",
+    "1a6487dd-8bc6-3762-bd8a-2e50e15dbe75",
+    "37fcd8ac-c148-3c4a-92ac-a10f355451b7",
+    "422dd53b-6010-4eb9-8902-de3d134c5a70",
+    "51e6b881-e5a1-30c8-ae2b-02891d5a54ce",
+    "5bc5e7b0-4d90-3ac8-8ca8-f6037e1cf75c",
+    "5d9c1080-e6e9-3222-96a2-37ca7286a874",
+    "6bae6c0c-5296-376d-96bc-6c8dbe6693a5",
+    "6e106cf8-f6dd-38f6-89c8-9be7a71e7275",
+    "8184872e-4203-3ff1-b716-af5fad9233ec",
+    "8606d399-57d4-3ae9-938b-db7b8fb7ef8c",
+    "89f79c55-6698-3037-bd2e-d40c81af169a",
+    "9158b740-6527-3194-9953-6b7b3b28d544",
+    "931b76ee-63df-36f6-9f2e-7fb16f2ee721",
+    "9eb87a0b-2457-359d-b958-81e8583d8e44",
+    "9efe1171-6faf-3427-8451-8f6469f7678e",
+    "bd9636d2-7220-3585-9c7d-4acaea167b71",
+    "c8cdffb0-7942-3ff5-9f71-210e095e1d31",
+    "d0828f48-3e67-3136-9c70-1f99968c8280",
+    "e453f164-dd36-3f1a-9471-05c2627cbaa5",
+    "fb720691-1736-3fa2-940b-07b97603efc6",
+]
 
 
 @dataclass
@@ -78,6 +126,61 @@ class ProcessArgoverse2:
     masks_path: Path = Path("assets/masks").absolute()
     """Path to ego-vehicle masks."""
 
+    def _download_data(self, split: str):
+        split_name = "train" if split in ["train", "residential", "downtown"] else split
+        CONSOLE.log(f"Downloading Argoverse2 {split} split...")
+        target_dir = self.data / split_name
+
+        # Create an S3 client with no signature required
+        if split == "residential":
+            sequences = RESIDENTIAL_SEQUENCE_IDS
+            for sequence in sequences:
+                s3_path = f"s3://argoverse/datasets/av2/sensor/{split_name}/{sequence}/*"
+                self._download_s3(s3_path, target_dir / sequence)
+        elif split == "downtown":
+            sequences = DOWNTOWN_SEQUENCE_IDS
+            for sequence in sequences:
+                s3_path = f"s3://argoverse/datasets/av2/sensor/{split_name}/{sequence}/*"
+                self._download_s3(s3_path, target_dir / sequence)
+        else:
+            s3_path = f"s3://argoverse/datasets/av2/sensor/{split_name}/*"
+            self._download_s3(s3_path, target_dir)
+
+    def _download_s3(self, s3_path: str, target_dir: Path):
+        assert shutil.which(
+            "s5cmd"
+        ), "s5cmd is not installed. Please install it with e.g. 'conda install s5cmd -c conda-forge'."
+        os.makedirs(target_dir, exist_ok=True)
+        command = ["s5cmd", "--no-sign-request", "cp", s3_path, str(target_dir)]
+        CONSOLE.log(f"Downloading {s3_path} to {str(target_dir)}")
+        subprocess.run(command, check=True)
+
+    def _check_exists(self, sequences: list[str]):
+        for seq in sequences:
+            if not (self.data / self.split / seq).exists():
+                return False
+        return True
+
+    def _check_data(self):
+        if self.location_aabb is not None:
+            if self.city == "PIT" and self.location_aabb == (6180, 1620, 6310, 1780):
+                # residential split
+                if not self._check_exists(RESIDENTIAL_SEQUENCE_IDS):
+                    self._download_data("residential")
+            elif self.city == "PIT" and self.location_aabb == (1100, -50, 1220, 150):
+                # downtown split
+                if not self._check_exists(DOWNTOWN_SEQUENCE_IDS):
+                    self._download_data("downtown")
+            else:
+                # any other split defined by location AABB
+                self._download_data(self.split)
+        else:
+            # if no location AABB is set, we need a log id in a given split
+            assert self.log_id is not None
+            if not self._check_exists([self.log_id]):
+                s3_path = f"s3://argoverse/datasets/av2/sensor/{self.split}/{self.log_id}/*"
+                self._download_s3(s3_path, self.data / self.split / self.log_id)
+
     def main(self):
         if av2 is None:
             CONSOLE.log(
@@ -85,6 +188,7 @@ class ProcessArgoverse2:
                 style="bold red",
             )
             return
+        self._check_data()
         self.prepare_seq()
 
     def prepare_seq(self, seq_name: str | None = None):
