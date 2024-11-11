@@ -96,11 +96,11 @@ For more detailed information on the codebase, please check out our [documentati
 ## Citation
 Please consider citing our work with the following references
 ```
-@article{fischer2024dynamic,
-  title={Dynamic 3D Gaussian Fields for Urban Areas},
-  author={Fischer, Tobias and Kulhanek, Jonas and Bul{\`o}, Samuel Rota and Porzi, Lorenzo and Pollefeys, Marc and Kontschieder, Peter},
-  journal={arXiv preprint arXiv:2406.03175},
-  year={2024}
+@InProceedings{fischer2024dynamic,
+    author    = {Tobias Fischer and Jonas Kulhanek and Samuel Rota Bul{\`o} and Lorenzo Porzi and Marc Pollefeys and Peter Kontschieder},
+    title     = {Dynamic 3D Gaussian Fields for Urban Areas},
+    booktitle = {The Thirty-eighth Annual Conference on Neural Information Processing Systems},
+    year      = {2024}
 }
 
 @InProceedings{fischer2024multi,

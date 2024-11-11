@@ -6,6 +6,8 @@
 <a href="https://tobiasfshr.github.io/">Tobias Fischer</a><sup>1</sup>, <a href="https://jkulhanek.com/">Jonas Kulhanek</a><sup>1,3</sup>, <a href="https://scholar.google.com/citations?user=484sccEAAAAJ&hl=en">Samuel Rota Bulo</a><sup>2</sup>, <a href="https://scholar.google.it/citations?user=vW1gaVEAAAAJ&hl=it">Lorenzo Porzi</a><sup>2</sup>, <a href="https://people.inf.ethz.ch/marc.pollefeys/">Marc Pollefeys</a><sup>1</sup>, <a href="https://scholar.google.com/citations?user=CxbDDRMAAAAJ&hl=en">Peter Kontschieder</a><sup>2</sup>
 
 <sup>1</sup>ETH Zurich <sup>2</sup>Meta Reality Labs <sup>3</sup>CTU Prague
+
+### *NeurIPS 2024 <span style="color:red">(spotlight)</span>*
 </div>
 
 ![Alt Text](../../assets/media/4dgf.png)
@@ -47,10 +49,10 @@ ns-train 4dgf-kitti street --data data/KITTI/tracking/training/metadata_0006.pkl
 ## Citation
 
 ```
-@article{fischer2024dynamic,
-  title={Dynamic 3D Gaussian Fields for Urban Areas},
-  author={Fischer, Tobias and Kulhanek, Jonas and Bul{\`o}, Samuel Rota and Porzi, Lorenzo and Pollefeys, Marc and Kontschieder, Peter},
-  journal={arXiv preprint arXiv:2406.03175},
-  year={2024}
+@InProceedings{fischer2024dynamic,
+    author    = {Tobias Fischer and Jonas Kulhanek and Samuel Rota Bul{\`o} and Lorenzo Porzi and Marc Pollefeys and Peter Kontschieder},
+    title     = {Dynamic 3D Gaussian Fields for Urban Areas},
+    booktitle = {The Thirty-eighth Annual Conference on Neural Information Processing Systems},
+    year      = {2024}
 }
 ```

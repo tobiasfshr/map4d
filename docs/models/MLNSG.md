@@ -6,6 +6,8 @@
 <a href="https://tobiasfshr.github.io/">Tobias Fischer</a><sup>1</sup>, <a href="https://scholar.google.it/citations?user=vW1gaVEAAAAJ&hl=it">Lorenzo Porzi</a><sup>2</sup>, <a href="https://scholar.google.com/citations?user=484sccEAAAAJ&hl=en">Samuel Rota Bulo</a><sup>2</sup>, <a href="https://people.inf.ethz.ch/marc.pollefeys/">Marc Pollefeys</a><sup>1</sup>, <a href="https://scholar.google.com/citations?user=CxbDDRMAAAAJ&hl=en">Peter Kontschieder</a><sup>2</sup>
 
 <sup>1</sup>ETH Zurich <sup>2</sup>Meta Reality Labs
+
+### *CVPR 2024*
 </div>
 
 ![Alt Text](../../assets/media/ml-nsg.jpg)
